@@ -11,31 +11,47 @@ import CoreML
 struct ContentView: View {
     // Input states
     @State private var sleepAmount = 8.0
-    @State private var wakeUp = Date.now
+    @State private var wakeUp = defaultWakeTime
     @State private var coffeeAmount = 1
     // Alert states
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var showingAlert = false
     
+    // Compute default value
+    // (Making this value static allows us to use it in an initializer statement.
+    // This work becuase when we make the var static it belongs to the ContentView
+    // struct itself rather than a single instance of that struct, so it can be used whenever.)
+    static var defaultWakeTime: Date {
+        var components = DateComponents()
+        components.hour = 7
+        components.minute = 0
+        return Calendar.current.date(from: components) ?? Date.now
+    }
+    
     var body: some View {
         NavigationView {
-            VStack {
-                Text("When do you want to wake up?")
-                    .font(.headline)
+            Form {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("When do you want to wake up?")
+                        .font(.headline)
+                    
+                    DatePicker("Please enter a date", selection: $wakeUp, displayedComponents: .hourAndMinute)
+                        .labelsHidden()  // let's us hide the ugly label, but still use the lable for VoiceOver
+                }
                 
-                DatePicker("Please enter a date", selection: $wakeUp, displayedComponents: .hourAndMinute)
-                    .labelsHidden()  // let's us hide the ugly label, but still use the lable for VoiceOver
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Desired amount of sleep")
+                        .font(.headline)
+                    Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
+                }
                 
-                Text("Desired amount of sleep")
-                    .font(.headline)
-                Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
-                
-                Text("Daily coffee intake")
-                    .font(.headline)
-                Stepper(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups", value: $coffeeAmount, in: 1...20)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Daily coffee intake")
+                        .font(.headline)
+                    Stepper(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups", value: $coffeeAmount, in: 1...20)
+                }
             }
-            .padding()
             .navigationTitle("Better Rest")
             .toolbar {
                 Button("Calculate", action: calculateBedtime)
