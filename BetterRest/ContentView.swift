@@ -13,11 +13,7 @@ struct ContentView: View {
     @State private var sleepAmount = 8.0
     @State private var wakeUp = defaultWakeTime
     @State private var coffeeAmount = 1
-    // Alert states
-//    @State private var alertTitle = "Your ideal bedtime is..."
-//    @State private var alertMessage = ""
-//    @State private var showingAlert = false
-    
+     
     // Compute default value
     // (Making this value static allows us to use it in an initializer statement.
     // This work becuase when we make the var static it belongs to the ContentView
@@ -73,44 +69,13 @@ struct ContentView: View {
                 }
                 Section("Your ideal bedtime is") {
                     Text(idealBedTime)
+                        .font(.largeTitle)
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
             .navigationTitle("Better Rest")
-            
-//            .toolbar {
-//                Button("Calculate", action: calculateBedtime)
-//            }
-//            .alert(alertTitle, isPresented: $showingAlert) {
-//                Button("OK") { }
-//            } message: {
-//                Text(alertMessage)
-//            }
-            
         }
     }
-        
-   /*
-    func calculateBedtime() {
-        do {
-            let config = MLModelConfiguration()
-            let model = try SleepCalculator(configuration: config)
-            
-            let components = Calendar.current.dateComponents([.hour, .minute], from: wakeUp)
-            let hour = (components.hour ?? 0) * 60 * 60
-            let minute = (components.minute ?? 0) * 60
-            
-            let prediction = try model.prediction(wake: Double(hour + minute), estimatedSleep: sleepAmount, coffee: Double(coffeeAmount))
-            let sleepTime = wakeUp - prediction.actualSleep
-            
-            alertTitle = "Your ideal bedtime is…"
-            alertMessage = sleepTime.formatted(date: .omitted, time: .shortened)
-        } catch {
-            alertTitle = "Error"
-            alertMessage = "Sorry, there was a problem calculating your bedtime."
-        }
-        showingAlert = true
-    }
-    */
 }
 
 struct ContentView_Previews: PreviewProvider {
