@@ -14,9 +14,9 @@ struct ContentView: View {
     @State private var wakeUp = defaultWakeTime
     @State private var coffeeAmount = 1
     // Alert states
-    @State private var alertTitle = "Your ideal bedtime is..."
-    @State private var alertMessage = ""
-    @State private var showingAlert = false
+//    @State private var alertTitle = "Your ideal bedtime is..."
+//    @State private var alertMessage = ""
+//    @State private var showingAlert = false
     
     // Compute default value
     // (Making this value static allows us to use it in an initializer statement.
@@ -27,6 +27,28 @@ struct ContentView: View {
         components.hour = 7
         components.minute = 0
         return Calendar.current.date(from: components) ?? Date.now
+    }
+    
+    private var idealBedTime: String {
+        var bedtime = ""
+        do {
+            let config = MLModelConfiguration()
+            let model = try SleepCalculator(configuration: config)
+            
+            let components = Calendar.current.dateComponents([.hour, .minute], from: wakeUp)
+            let hour = (components.hour ?? 0) * 60 * 60
+            let minute = (components.minute ?? 0) * 60
+            
+            let prediction = try model.prediction(wake: Double(hour + minute), estimatedSleep: sleepAmount, coffee: Double(coffeeAmount))
+            let sleepTime = wakeUp - prediction.actualSleep
+            
+            
+             bedtime = sleepTime.formatted(date: .omitted, time: .shortened)
+        } catch {
+            print("Error")
+            bedtime = "Sorry, there was a problem calculating your bedtime."
+        }
+        return bedtime
     }
     
     var body: some View {
@@ -49,22 +71,25 @@ struct ContentView: View {
                         }
                     }
                 }
+                Section("Your ideal bedtime is") {
+                    Text(idealBedTime)
+                }
             }
             .navigationTitle("Better Rest")
             
-            .toolbar {
-                Button("Calculate", action: calculateBedtime)
-            }
-            .alert(alertTitle, isPresented: $showingAlert) {
-                Button("OK") { }
-            } message: {
-                Text(alertMessage)
-            }
+//            .toolbar {
+//                Button("Calculate", action: calculateBedtime)
+//            }
+//            .alert(alertTitle, isPresented: $showingAlert) {
+//                Button("OK") { }
+//            } message: {
+//                Text(alertMessage)
+//            }
             
         }
     }
         
-    
+   /*
     func calculateBedtime() {
         do {
             let config = MLModelConfiguration()
@@ -85,6 +110,7 @@ struct ContentView: View {
         }
         showingAlert = true
     }
+    */
 }
 
 struct ContentView_Previews: PreviewProvider {
