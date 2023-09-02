@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var wakeUp = defaultWakeTime
     @State private var coffeeAmount = 1
     // Alert states
-    @State private var alertTitle = ""
+    @State private var alertTitle = "Your ideal bedtime is..."
     @State private var alertMessage = ""
     @State private var showingAlert = false
     
@@ -32,24 +32,15 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             Form {
-//                VStack(alignment: .leading, spacing: 0) {
-//                    Text("When do you want to wake up?")
-//                        .font(.headline)
                 Section("When do you want to wake up?") {
                     DatePicker("Please enter a date", selection: $wakeUp, displayedComponents: .hourAndMinute)
                         .labelsHidden()  // let's us hide the ugly label, but still use the lable for VoiceOver
                 }
                 
-//                VStack(alignment: .leading, spacing: 0) {
-//                    Text("Desired amount of sleep")
-//                        .font(.headline)
                 Section("Desired amount of sleep") {
                     Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
                 }
-                
-//                VStack(alignment: .leading, spacing: 0) {
-//                    Text("Daily coffee intake")
-//                        .font(.headline)
+
                 Section("Daily coffee intake") {
                     // Stepper(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups", value: $coffeeAmount, in: 1...20)
                     Picker(coffeeAmount == 1 ? "1 cup" : "\(coffeeAmount) cups", selection: $coffeeAmount) {
@@ -58,12 +49,9 @@ struct ContentView: View {
                         }
                     }
                 }
-                
-                // TODO: Make a block that recalculates and displays the suggested bedtime whenever inputs are changed. This will allow the alert and toolbar button to be removed
-//                Text(alertTitle)
-//                Text(alertMessage)
             }
             .navigationTitle("Better Rest")
+            
             .toolbar {
                 Button("Calculate", action: calculateBedtime)
             }
@@ -72,7 +60,6 @@ struct ContentView: View {
             } message: {
                 Text(alertMessage)
             }
-            
             
         }
     }
